@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- 视频播放器 -->
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:use_controller="false"
+        app:resize_mode="zoom"
+        app:surface_type="texture_view" />
+
+    <!-- 加载圈 -->
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="#FFFFFF"
+        android:visibility="visible" />
+
+    <!-- 暂停图标 -->
+    <ImageView
+        android:id="@+id/pauseIcon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_media_pause"
+        android:visibility="gone"
+        android:alpha="0.6"
+        android:tint="#FFFFFF" />
+
+    <!-- 长按下载进度圆环 -->
+    <ProgressBar
+        android:id="@+id/longPressIndicator"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@android:drawable/progress_horizontal"
+        android:visibility="gone" />
+
+    <!-- 进度条（底部细线） -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_gravity="bottom"
+        android:indeterminate="false"
+        android:max="1000"
+        android:progress="0"
+        android:progressTint="#AAFFFFFF"
+        android:progressBackgroundTint="#33FFFFFF" />
+
+    <!-- 左下角：源名 + 时间 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="18dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvSource"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#CCFFFFFF"
+            android:textSize="12sp"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/tvDivider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" · "
+            android:textColor="#66FFFFFF"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#CCFFFFFF"
+            android:textSize="12sp"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:fontFamily="monospace"
+            android:text="" />
+    </LinearLayout>
+
+    <!-- 右下角按钮组 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:orientation="vertical"
+        android:paddingEnd="12dp"
+        android:paddingBottom="14dp"
+        android:gravity="center_horizontal">
+
+        <!-- 平铺 -->
+        <ImageView
+            android:id="@+id/btnGrid"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:tint="#66FFFFFF"
+            android:padding="7dp"
+            android:layout_marginBottom="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- 设置 -->
+        <ImageView
+            android:id="@+id/btnSettings"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@android:drawable/ic_menu_manage"
+            android:tint="#66FFFFFF"
+            android:padding="7dp"
+            android:layout_marginBottom="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- 静音 -->
+        <ImageView
+            android:id="@+id/btnMute"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@android:drawable/ic_lock_silent_mode"
+            android:tint="#66FFFFFF"
+            android:padding="7dp"
+            android:layout_marginBottom="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- 下载 -->
+        <ImageView
+            android:id="@+id/btnDownload"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@android:drawable/stat_sys_download"
+            android:tint="#66FFFFFF"
+            android:padding="7dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF0A0A14">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/gridPlayerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:use_controller="false"
+        app:resize_mode="zoom"
+        app:surface_type="texture_view" />
+
+    <!-- 加载中占位 -->
+    <View
+        android:id="@+id/gridPlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF14141F" />
+
+</FrameLayout>

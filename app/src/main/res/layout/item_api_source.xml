@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@color/bg_card"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="12dp"
+    android:layout_marginBottom="2dp">
+
+    <!-- 勾选 -->
+    <CheckBox
+        android:id="@+id/cbEnabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/accent"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingEnd="8dp" />
+
+    <!-- 名称+URL -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tvUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_hint"
+            android:textSize="11sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+    </LinearLayout>
+
+    <!-- 百分比 -->
+    <TextView
+        android:id="@+id/tvPercent"
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/accent"
+        android:textSize="11sp"
+        android:text="50%" />
+
+    <!-- 权重：− 5 + -->
+    <TextView
+        android:id="@+id/btnWeightDown"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:text="−"
+        android:textColor="@color/text_secondary"
+        android:textSize="18sp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <TextView
+        android:id="@+id/tvWeight"
+        android:layout_width="22dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:text="5" />
+
+    <TextView
+        android:id="@+id/btnWeightUp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:text="+"
+        android:textColor="@color/text_secondary"
+        android:textSize="18sp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <!-- 编辑 -->
+    <ImageView
+        android:id="@+id/btnEdit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@android:drawable/ic_menu_edit"
+        android:tint="@color/accent_dim"
+        android:padding="5dp"
+        android:layout_marginStart="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <!-- 删除 -->
+    <ImageView
+        android:id="@+id/btnDelete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="@color/danger"
+        android:padding="5dp"
+        android:layout_marginStart="2dp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+</LinearLayout>
