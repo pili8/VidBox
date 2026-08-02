@@ -60,50 +60,68 @@
         android:progressTint="#AAFFFFFF"
         android:progressBackgroundTint="#33FFFFFF" />
 
-    <!-- 左下角：源名 + 时间 -->
+    <!-- 左下角：平铺按钮 + 源名/时间 -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
-        android:orientation="horizontal"
-        android:paddingStart="14dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="18dp"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingBottom="14dp"
+        android:gravity="start">
 
-        <TextView
-            android:id="@+id/tvSource"
+        <!-- 平铺按钮 -->
+        <ImageView
+            android:id="@+id/btnGrid"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:tint="#66FFFFFF"
+            android:padding="7dp"
+            android:layout_marginBottom="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- 源名 + 时间 -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#CCFFFFFF"
-            android:textSize="12sp"
-            android:shadowColor="#000000"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="2"
-            android:text="" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvDivider"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" · "
-            android:textColor="#66FFFFFF"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/tvSource"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#CCFFFFFF"
+                android:textSize="12sp"
+                android:shadowColor="#000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:text="" />
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#CCFFFFFF"
-            android:textSize="12sp"
-            android:shadowColor="#000000"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="2"
-            android:fontFamily="monospace"
-            android:text="" />
+            <TextView
+                android:id="@+id/tvDivider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" · "
+                android:textColor="#66FFFFFF"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#CCFFFFFF"
+                android:textSize="12sp"
+                android:shadowColor="#000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:fontFamily="monospace"
+                android:text="" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- 右下角按钮组 -->
@@ -115,17 +133,6 @@
         android:paddingEnd="12dp"
         android:paddingBottom="14dp"
         android:gravity="center_horizontal">
-
-        <!-- 平铺 -->
-        <ImageView
-            android:id="@+id/btnGrid"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:src="@android:drawable/ic_menu_gallery"
-            android:tint="#66FFFFFF"
-            android:padding="7dp"
-            android:layout_marginBottom="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless" />
 
         <!-- 设置 -->
         <ImageView
