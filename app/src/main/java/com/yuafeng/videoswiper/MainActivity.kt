@@ -128,6 +128,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupGrid() {
         rvGrid.layoutManager = GridLayoutManager(this, 2)
+        rvGrid.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy <= 0) return // 只关心向下滑
+                val lm = recyclerView.layoutManager as GridLayoutManager
+                val lastVisible = lm.findLastVisibleItemPosition()
+                if (lastVisible >= videoList.size - PREFETCH_THRESHOLD) loadMore()
+            }
+        })
     }
 
     private fun loadInitial() {
