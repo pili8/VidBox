@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private var gridAdapter: GridAdapter? = null
 
     private var isGridMode = false
+    private var cameFromGrid = false // 记录是否从平铺模式进入全屏
     private val PREFETCH_THRESHOLD = 3
     private var isLoadingMore = false
 
@@ -73,7 +74,8 @@ class MainActivity : AppCompatActivity() {
             rvGrid.visibility = View.VISIBLE
             if (gridAdapter == null) {
                 gridAdapter = GridAdapter(videoList) { pos ->
-                    // 点击格子 → 回到全屏模式，定位到该视频
+                    // 点击格子 → 进入全屏播放，记住来源
+                    cameFromGrid = true
                     isGridMode = false
                     viewPager.visibility = View.VISIBLE
                     rvGrid.visibility = View.GONE
@@ -89,6 +91,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (isGridMode) {
+            // 在平铺模式 → 切回全屏
+            cameFromGrid = false
+            toggleGridMode()
+        } else if (cameFromGrid) {
+            // 从平铺点进来的全屏 → 返回平铺
+            cameFromGrid = false
             toggleGridMode()
         } else {
             super.onBackPressed()

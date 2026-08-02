@@ -32,15 +32,6 @@ class GridAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_grid_video, parent, false)
-        val w = parent.width / 2
-        if (w > 0) {
-            view.layoutParams = ViewGroup.LayoutParams(w, w)
-        } else {
-            view.post {
-                val pw = parent.width / 2
-                if (pw > 0) view.layoutParams = ViewGroup.LayoutParams(pw, pw)
-            }
-        }
         return VH(view)
     }
 
