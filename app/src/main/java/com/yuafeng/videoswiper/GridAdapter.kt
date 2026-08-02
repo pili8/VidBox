@@ -1,5 +1,6 @@
 package com.yuafeng.videoswiper
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 
 /**
  * 平铺模式适配器
- * - 滚动时只显示占位符，停止后才播放（避免快速创建/释放）
- * - 不设硬上限，靠 RecyclerView 回收机制自然控制播放器数量
- * - 每次 bind 先释放旧播放器，避免残留黑屏
+ * 优化策略：
+ * 1. 播放器池：最大 6 个，复用而非每次新建
+ * 2. 生命周期管理：onViewAttached/Detached 控制播放
+ * 3. 滚动时暂停，停止后才恢复
  */
 class GridAdapter(
     private val videos: List<VideoItem>,
@@ -23,10 +25,12 @@ class GridAdapter(
     class VH(v: View) : RecyclerView.ViewHolder(v) {
         val playerView: PlayerView = v.findViewById(R.id.gridPlayerView)
         val placeholder: View = v.findViewById(R.id.gridPlaceholder)
-        var player: ExoPlayer? = null
     }
 
     private var isScrolling = false
+    private val playerPool = mutableListOf<ExoPlayer>()
+    private val positionPlayerMap = mutableMapOf<Int, ExoPlayer>()
+    private val MAX_PLAYERS = 6
 
     override fun getItemCount() = videos.size
 
@@ -36,47 +40,85 @@ class GridAdapter(
     }
 
     override fun onBindViewHolder(h: VH, pos: Int) {
-        // 先释放旧的（ViewHolder 复用时避免残留播放器/黑屏）
-        releasePlayer(h)
         h.placeholder.visibility = View.VISIBLE
-
+        h.playerView.player = null
+        
         h.itemView.setOnClickListener {
             val p = h.bindingAdapterPosition
             if (p != RecyclerView.NO_POSITION) onClick(p)
         }
-
-        // 滚动中不创建播放器，停止后才播放
-        if (!isScrolling) {
-            startPlayback(h, pos)
-        }
     }
 
-    override fun onViewRecycled(h: VH) {
-        super.onViewRecycled(h)
-        releasePlayer(h)
+    override fun onViewAttachedToWindow(h: VH) {
+        super.onViewAttachedToWindow(h)
+        val pos = h.bindingAdapterPosition
+        if (pos == RecyclerView.NO_POSITION || isScrolling) return
+        attachPlayer(h, pos)
+    }
+
+    override fun onViewDetachedFromWindow(h: VH) {
+        super.onViewDetachedFromWindow(h)
+        val pos = h.bindingAdapterPosition
+        if (pos == RecyclerView.NO_POSITION) return
+        detachPlayer(h, pos)
     }
 
     fun onScrollStateChanged(newState: Int) {
-        val wasScrolling = isScrolling
         isScrolling = newState != RecyclerView.SCROLL_STATE_IDLE
-        if (wasScrolling && !isScrolling) {
-            // 刚停止滚动 → 刷新可见项，触发播放
-            notifyDataSetChanged()
+    }
+
+    fun resumePlayback(rv: RecyclerView) {
+        if (isScrolling) return
+        for (i in 0 until rv.childCount) {
+            val child = rv.getChildAt(i) ?: continue
+            val holder = rv.getChildViewHolder(child) as? VH ?: continue
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                attachPlayer(holder, pos)
+            }
         }
     }
 
-    private fun startPlayback(h: VH, pos: Int) {
-        val ctx = h.itemView.context ?: return
-        if (pos < 0 || pos >= videos.size) return
+    fun pauseAll(rv: RecyclerView) {
+        for (i in 0 until rv.childCount) {
+            val child = rv.getChildAt(i) ?: continue
+            val holder = rv.getChildViewHolder(child) as? VH ?: continue
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                detachPlayer(holder, pos)
+            }
+        }
+    }
 
-        h.player = ExoPlayer.Builder(ctx).build().apply {
-            h.playerView.player = this
+    private fun attachPlayer(h: VH, pos: Int) {
+        if (pos < 0 || pos >= videos.size) return
+        if (positionPlayerMap.containsKey(pos)) return // 已有播放器
+
+        val player = getOrCreatePlayer(h.itemView.context)
+        if (player == null) {
+            // 池满了，回收最旧的
+            val oldestPos = positionPlayerMap.keys.firstOrNull()
+            if (oldestPos != null) {
+                val oldPlayer = positionPlayerMap.remove(oldestPos)
+                oldPlayer?.let { 
+                    returnPlayer(it)
+                    positionPlayerMap[pos] = getOrCreatePlayer(h.itemView.context)!!
+                }
+            }
+        } else {
+            positionPlayerMap[pos] = player
+        }
+
+        val p = positionPlayerMap[pos] ?: return
+        h.playerView.player = p
+        
+        p.apply {
             setMediaItem(MediaItem.fromUri(videos[pos].url))
             volume = 0f
             repeatMode = Player.REPEAT_MODE_ALL
             prepare()
             playWhenReady = true
-
+            
             addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(state: Int) {
                     if (state == Player.STATE_READY) {
@@ -87,15 +129,41 @@ class GridAdapter(
         }
     }
 
-    private fun releasePlayer(h: VH) {
-        h.player?.release()
-        h.player = null
+    private fun detachPlayer(h: VH, pos: Int) {
+        val player = positionPlayerMap.remove(pos)
+        if (player != null) {
+            player.stop()
+            player.clearMediaItems()
+            returnPlayer(player)
+        }
         h.playerView.player = null
+        h.placeholder.visibility = View.VISIBLE
+    }
+
+    private fun getOrCreatePlayer(ctx: Context): ExoPlayer? {
+        // 从池中取空闲播放器
+        for (p in playerPool) {
+            if (!positionPlayerMap.values.contains(p)) {
+                return p
+            }
+        }
+        // 池未满，新建
+        if (playerPool.size < MAX_PLAYERS) {
+            val player = ExoPlayer.Builder(ctx).build()
+            playerPool.add(player)
+            return player
+        }
+        return null // 池满
+    }
+
+    private fun returnPlayer(player: ExoPlayer) {
+        player.playWhenReady = false
     }
 
     fun releaseAllPlayers(rv: RecyclerView) {
-        for (i in 0 until rv.childCount) {
-            (rv.getChildViewHolder(rv.getChildAt(i)) as? VH)?.let { releasePlayer(it) }
-        }
+        pauseAll(rv)
+        playerPool.forEach { it.release() }
+        playerPool.clear()
+        positionPlayerMap.clear()
     }
 }

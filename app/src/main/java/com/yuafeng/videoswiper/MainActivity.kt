@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 rvGrid.adapter = gridAdapter
             } else {
-                gridAdapter?.notifyDataSetChanged()
+                gridAdapter?.resumePlayback(rvGrid)
             }
         }
     }
@@ -152,6 +152,14 @@ class MainActivity : AppCompatActivity() {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 gridAdapter?.onScrollStateChanged(newState)
+                when (newState) {
+                    RecyclerView.SCROLL_STATE_DRAGGING, RecyclerView.SCROLL_STATE_SETTLING -> {
+                        gridAdapter?.pauseAll(rvGrid)
+                    }
+                    RecyclerView.SCROLL_STATE_IDLE -> {
+                        gridAdapter?.resumePlayback(rvGrid)
+                    }
+                }
             }
         })
     }
