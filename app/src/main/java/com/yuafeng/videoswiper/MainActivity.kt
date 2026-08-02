@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     private var isGridMode = false
     private val PREFETCH_THRESHOLD = 3
+    private var isLoadingMore = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +64,8 @@ class MainActivity : AppCompatActivity() {
             isGridMode = false
             viewPager.visibility = View.VISIBLE
             rvGrid.visibility = View.GONE
+            // 释放所有平铺播放器，节省资源
+            gridAdapter?.releaseAllPlayers(rvGrid)
         } else {
             // 切到平铺模式
             isGridMode = true
@@ -74,6 +77,7 @@ class MainActivity : AppCompatActivity() {
                     isGridMode = false
                     viewPager.visibility = View.VISIBLE
                     rvGrid.visibility = View.GONE
+                    gridAdapter?.releaseAllPlayers(rvGrid)
                     viewPager.setCurrentItem(pos, false)
                 }
                 rvGrid.adapter = gridAdapter
@@ -130,10 +134,14 @@ class MainActivity : AppCompatActivity() {
         rvGrid.layoutManager = GridLayoutManager(this, 2)
         rvGrid.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy <= 0) return // 只关心向下滑
+                if (dy <= 0) return
                 val lm = recyclerView.layoutManager as GridLayoutManager
                 val lastVisible = lm.findLastVisibleItemPosition()
                 if (lastVisible >= videoList.size - PREFETCH_THRESHOLD) loadMore()
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                gridAdapter?.onScrollStateChanged(newState)
             }
         })
     }
@@ -157,12 +165,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadMore() {
+        if (isLoadingMore) return
+        isLoadingMore = true
         lifecycleScope.launch {
-            val src = settings.getEnabledSources()
-            val more = VideoApi.prefetch(3, src)
-            if (more.isNotEmpty()) {
-                pagerAdapter.addVideos(more)
-                gridAdapter?.notifyItemRangeInserted(videoList.size - more.size, more.size)
+            try {
+                val src = settings.getEnabledSources()
+                val more = VideoApi.prefetch(3, src)
+                if (more.isNotEmpty()) {
+                    val start = videoList.size
+                    videoList.addAll(more)
+                    pagerAdapter.notifyItemRangeInserted(start, more.size)
+                    gridAdapter?.notifyItemRangeInserted(start, more.size)
+                }
+            } finally {
+                isLoadingMore = false
             }
         }
     }
