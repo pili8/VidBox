@@ -33,10 +33,14 @@ jobs:
       - name: Generate version tag
         id: version
         run: |
-          BRANCH=${GITHUB_REF_NAME//\//-}
+          # 从 build.gradle.kts 读取版本号
+          VERSION_NAME=$(grep 'versionName' app/build.gradle.kts | head -1 | sed 's/.*versionName = "\(.*\)".*/\1/')
+          VERSION_CODE=$(grep 'versionCode' app/build.gradle.kts | head -1 | sed 's/.*versionCode = \(.*\)/\1/')
           SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
-          echo "tag=build-${BRANCH}-${SHA_SHORT}" >> $GITHUB_OUTPUT
-          echo "name=${BRANCH} @ ${SHA_SHORT}" >> $GITHUB_OUTPUT
+          BRANCH=${GITHUB_REF_NAME//\//-}
+          
+          echo "tag=v${VERSION_NAME}-build${VERSION_CODE}-${SHA_SHORT}" >> $GITHUB_OUTPUT
+          echo "name=VidBox v${VERSION_NAME} (${BRANCH}-${SHA_SHORT})" >> $GITHUB_OUTPUT
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
