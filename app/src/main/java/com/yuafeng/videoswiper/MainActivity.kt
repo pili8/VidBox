@@ -132,6 +132,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupGrid() {
         rvGrid.layoutManager = GridLayoutManager(this, 2)
+        rvGrid.setItemViewCacheSize(0)
+        rvGrid.recycledViewPool.setMaxRecycledViews(0, 2)
         rvGrid.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy <= 0) return

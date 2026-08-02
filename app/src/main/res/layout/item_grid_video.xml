@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         app:use_controller="false"
         app:resize_mode="zoom"
-        app:surface_type="texture_view" />
+        app:surface_type="surface_view" />
 
     <!-- 加载中占位 -->
     <View
