@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 现代深色主题 -->
+    <color name="bg_primary">#FF0A0A14</color>
+    <color name="bg_card">#FF14141F</color>
+    <color name="bg_input">#FF1C1C2B</color>
+    <color name="accent">#FF7C6AFF</color>
+    <color name="accent_dim">#FF5A4FCC</color>
+    <color name="accent_glow">#227C6AFF</color>
+    <color name="text_primary">#FFEEEEF0</color>
+    <color name="text_secondary">#FF8E8EA0</color>
+    <color name="text_hint">#FF55556A</color>
+    <color name="danger">#FFFF5577</color>
+    <color name="success">#FF55FFAA</color>
+    <color name="divider">#FF1E1E30</color>
+    <color name="ripple">#22FFFFFF</color>
+</resources>
