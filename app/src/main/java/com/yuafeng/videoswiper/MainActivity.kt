@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val src = settings.getEnabledSources()
-                val videos = VideoApi.prefetch(6, src)
+                val videos = VideoApi.prefetch(8, src)
                 if (videos.isNotEmpty()) {
                     videoList.addAll(videos)
                     pagerAdapter.notifyItemRangeInserted(0, videos.size)
